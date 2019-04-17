@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.practicemapapp">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity
+            android:name=".Homepage"
+            android:label="Homepage">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="MainActivity">
+            <intent-filter>
+                <category android:name="android.intent.action.ACTION_VIEW"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Userpass"
+            android:label="Userpass">
+            <intent-filter>
+                <category android:name="android.intent.category.ACTION_VIEW"/>
+            </intent-filter>
+
+        </activity>
+        <activity
+            android:name=".Newuser"
+            android:label="Newuser">
+            <intent-filter>
+                <category android:name="android.intent.category.ACTION_VIEW"/>
+            </intent-filter>
+
+        </activity>
+        <activity
+            android:name=".Navigation"
+            android:label="Navigation">
+            <intent-filter>
+                <category android:name="android.intent.category.ACTION_VIEW"/>
+            </intent-filter>
+        </activity>
+
+    </application>
+</manifest>
