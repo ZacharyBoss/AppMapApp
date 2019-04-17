@@ -25,7 +25,6 @@
         app:layout_constraintBottom_toTopOf="@+id/navigate"
         app:layout_constraintStart_toStartOf="@+id/navigate"
         app:layout_constraintTop_toTopOf="parent">
-
     </org.osmdroid.views.MapView>
 
 </android.support.constraint.ConstraintLayout>

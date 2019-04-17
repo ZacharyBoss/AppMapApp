@@ -1,34 +1,22 @@
 package com.example.practicemapapp;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.content.Context;
 import android.preference.PreferenceManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.view.View;
 import android.widget.Button;
-import android.support.v4.app.ActivityCompat;
-import android.widget.Button;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v4.content.ContextCompat;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.views.MapView;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.api.IMapController;
-import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 import org.osmdroid.views.overlay.Marker; // Used for markers
-import org.osmdroid.views.overlay.OverlayItem;
 
 
 // MainActivity is responsible for creating the map of app state's campus
@@ -39,11 +27,9 @@ public class MainActivity extends Activity {
     IMapController mapController;
     LocationManager locationManager;
 
-    //List<MarkerGeoPair<Marker, GeoPoint>> markerGeoList =
-    //        new ArrayList<MarkerGeoPair<Marker, GeoPoint>>();
-
     // MARKERS
-    ArrayList<Marker> markers;
+    static ArrayList<Marker> markers;
+    static ArrayList<GeoPoint> geopoints;
     // Activity centers, food, and larger buildings
     Marker srcMarker;
 
@@ -230,8 +216,6 @@ public class MainActivity extends Activity {
         GeoPoint startPoint = new GeoPoint(36.214201, -81.679850);
         mapController.setCenter(startPoint);
 
-
-
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         setMarkers();
   
@@ -253,19 +237,6 @@ public class MainActivity extends Activity {
 
         createMarkerList();
 
-
-
-       // Marker tempM;
-        //GeoPoint tempG;
-        //for (Marker m : markers) {
-        //for ( MarkerGeoPair mg : markerGeoList ) {
-        //    tempM = (Marker) mg.getMarker();
-            //tempG = (GeoPoint) mg.getGeoPoint();
-         //   tempM.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-         //   map.getOverlays().add(tempM);
-            //map.getController().animateTo(tempG);
-        //}
-
         for (Marker m: markers) {
             m.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
             map.getOverlays().add(m);
@@ -275,6 +246,7 @@ public class MainActivity extends Activity {
     private void createMarkerList() {
 
         markers = new ArrayList<Marker>();
+        geopoints = new ArrayList<GeoPoint>();
 
         srcMarker = createMarker(srcMarker, srcGeoPoint, 36.216649, -81.686158,
                 "Student Recreation Center (SRC)");
@@ -503,10 +475,11 @@ public class MainActivity extends Activity {
 
     }
 
-
     private Marker createMarker(Marker m, GeoPoint p, double lat, double lon, String title) {
         m = new Marker(map);
         p = new GeoPoint(lat, lon);
+        markers.add(m);
+        geopoints.add(p);
         m.setTitle(title);
         m.setPosition(p);
         //m.setIcon(new ColorDrawable(Color.BLUE));
@@ -514,6 +487,12 @@ public class MainActivity extends Activity {
         return m;
     }
 
+    public static ArrayList<Marker> getMarkerList() {
+        return markers;
+    }
 
+    public static ArrayList<GeoPoint> getGeoPointsList() {
+        return geopoints;
+    }
 
 }
