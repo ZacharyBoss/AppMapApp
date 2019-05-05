@@ -4,37 +4,42 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 
 import org.osmdroid.api.IMapController;
+import org.osmdroid.bonuspack.routing.OSRMRoadManager;
+import org.osmdroid.bonuspack.routing.Road;
+import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
 
-
-// MainActivity is responsible for creating the map of app state's campus
-// and adding the markers.
+// MainActivity is responsible for creating the map of app state's campus,
+// adding the markers, and navigation. All Map Activity.
 public class MainActivity extends Activity {
 
-    MapView map;
+    static MapView map;
     IMapController mapController;
     LocationManager locationManager;
+    Button navigateButton;
 
     // MARKERS
     static ArrayList<Marker> markers;
     static ArrayList<GeoPoint> geopoints;
+    //ArrayList<GeoPoint> waypoints;
     // Activity centers, food, and larger buildings
     Marker srcMarker;
-
     Marker walkerMarker;
-    Button navigate;
 
     Marker broyhillEventMarker;
     Marker broyhillMusicMarker;
@@ -43,31 +48,31 @@ public class MainActivity extends Activity {
     Marker trivetteMarker;
     Marker athleticsCenterMarker;
     Marker quinnMarker;
-    Marker parkingDeckMarker;       // Parking deck, University Police, and Traffic & Parking Dept.
+    Marker parkingDeckMarker;
     Marker jetMarker;
     Marker convoMarker;
     Marker chancellorsHouseMarker;
-    Marker estesHouseMarker;        // Estes House - Environmental Services
+    Marker estesHouseMarker;
     Marker turchinMarker;
     Marker valborgTheaterMarker;
     Marker libraryMarker;
-    Marker doughertyMarker;         // Dougherty Building
+    Marker doughertyMarker;
     Marker sanfordMallMarker;
-    Marker roessMarker;             // Central/Roess Dining Hall
-    Marker varsityMarker;           // Varsity Gym
+    Marker roessMarker;
+    Marker varsityMarker;
     Marker tennisMarker;
     Marker bbDoughertyMarker;
     Marker igGreerMarker;
-    Marker mailMarker;              // Mail apart of health services building
+    Marker mailMarker;
     Marker healthServicesMarker;
-    Marker studentUnionMarker;      // student union, solarium, bookstore, food, coffee, ...
+    Marker studentUnionMarker;
     Marker bookstoreMarker;
     Marker foundersMarker;
     Marker alumniMarker;
     Marker legendsMarker;
-    Marker softballStadiumMarker;   // Sywassink / Lloyd Family Stadium
-    Marker sofieldIndoorMarker;     // Sofield Family Indoor Practice Facility
-    Marker baseballStadiumMarker;   // Baseball Stadium (Jim and Bettie Smith Baseball Stadium)
+    Marker softballStadiumMarker;
+    Marker sofieldIndoorMarker;
+    Marker baseballStadiumMarker;
     // School building halls
     Marker weyMarker;
     Marker garwoodMarker;
@@ -78,7 +83,7 @@ public class MainActivity extends Activity {
     Marker rankinWestMarker;
     Marker rankinNorthMarker;
     Marker smithWrightMarker;
-    Marker doughertyHallMarker;     // DD Dougherty Hall
+    Marker doughertyHallMarker;
     Marker anneBelkMarker;
     Marker educationMarker;
     Marker sanfordMarker;
@@ -96,7 +101,7 @@ public class MainActivity extends Activity {
     Marker mountaineerMarker;
     Marker summitMarker;
     Marker coneMarker;
-    Marker appalachianMarker;   // Appalachian Hall
+    Marker appalachianMarker;
     Marker lovillMarker;
     Marker whiteMarker;
     Marker eastMarker;
@@ -112,7 +117,7 @@ public class MainActivity extends Activity {
     Marker peacockLotMarker;
     Marker collegeStreetDeckMarker;
     Marker admissionsLotMarker;
-    Marker southLotMarker;          // South parking lot (by baseball stadium)
+    Marker southLotMarker;
 
     // GEOPOINTS
     // Activity centers, food, and larger buildings
@@ -124,31 +129,31 @@ public class MainActivity extends Activity {
     GeoPoint trivetteGeoPoint;
     GeoPoint athleticsCenterGeoPoint;
     GeoPoint quinnGeoPoint;
-    GeoPoint parkingDeckGeoPoint;   // parking deck, University Police, and Traffic & Parking Dept.
+    GeoPoint parkingDeckGeoPoint;
     GeoPoint jetGeoPoint;
     GeoPoint convoGeoPoint;
     GeoPoint chancellorsHouseGeoPoint;
-    GeoPoint estesHouseGeoPoint;    // Estes House - Environmental Services
+    GeoPoint estesHouseGeoPoint;
     GeoPoint turchinGeoPoint;
     GeoPoint valborgTheaterGeoPoint;
     GeoPoint libraryGeoPoint;
-    GeoPoint doughertyGeoPoint;     // Dougherty Building
+    GeoPoint doughertyGeoPoint;
     GeoPoint sanfordMallGeoPoint;
-    GeoPoint roessGeoPoint;         // Central/Roess Dining Hall
-    GeoPoint varsityGeoPoint;       // Varsity Gym
+    GeoPoint roessGeoPoint;
+    GeoPoint varsityGeoPoint;
     GeoPoint tennisGeoPoint;
     GeoPoint bbDoughertyGeoPoint;
     GeoPoint igGreerGeoPoint;
-    GeoPoint mailGeoPoint;  // Mail apart of health services building
+    GeoPoint mailGeoPoint;
     GeoPoint healthServicesGeoPoint;
-    GeoPoint studentUnionGeoPoint;  // student union, solarium, bookstore, food, coffee, ...
+    GeoPoint studentUnionGeoPoint;
     GeoPoint bookstoreGeoPoint;
     GeoPoint foundersGeoPoint;
     GeoPoint alumniGeoPoint;
     GeoPoint legendsGeoPoint;
-    GeoPoint softballStadiumGeoPoint; // Sywassink / Lloyd Family Stadium
-    GeoPoint sofieldIndoorGeoPoint;   // Sofield Family Indoor Practice Facility
-    GeoPoint baseballStadiumGeoPoint; // Baseball Stadium (Jim and Bettie Smith Baseball Stadium)
+    GeoPoint softballStadiumGeoPoint;
+    GeoPoint sofieldIndoorGeoPoint;
+    GeoPoint baseballStadiumGeoPoint;
     // School building halls
     GeoPoint weyGeoPoint;
     GeoPoint garwoodGeoPoint;
@@ -159,10 +164,11 @@ public class MainActivity extends Activity {
     GeoPoint rankinWestGeoPoint;
     GeoPoint rankinNorthGeoPoint;
     GeoPoint smithWrightGeoPoint;
-    GeoPoint doughertyHallGeoPoint;   // DD Dougherty Hall
+    GeoPoint doughertyHallGeoPoint;
     GeoPoint anneBelkGeoPoint;
     GeoPoint educationGeoPoint;
     GeoPoint sanfordGeoPoint;
+    GeoPoint walkerGeoPoint;
     // Dorms
     GeoPoint belkGeoPoint;
     GeoPoint frankGeoPoint;
@@ -177,7 +183,7 @@ public class MainActivity extends Activity {
     GeoPoint mountaineerGeoPoint;
     GeoPoint summitGeoPoint;
     GeoPoint coneGeoPoint;
-    GeoPoint appalachianGeoPoint;   // Appalachian Hall
+    GeoPoint appalachianGeoPoint;
     GeoPoint lovillGeoPoint;
     GeoPoint whiteGeoPoint;
     GeoPoint eastGeoPoint;
@@ -193,7 +199,15 @@ public class MainActivity extends Activity {
     GeoPoint peacockLotGeoPoint;
     GeoPoint collegeStreetDeckGeoPoint;
     GeoPoint admissionsLotGeoPoint;
-    GeoPoint southLotGeoPoint;        // South parking lot (by baseball stadium)
+    GeoPoint southLotGeoPoint;
+
+    static boolean isRouting = false;
+    private GeoPoint startGP;
+    private GeoPoint destGP;
+    private Marker startM;
+    private Marker destM;
+    private static Road road;
+    Button backButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -204,6 +218,7 @@ public class MainActivity extends Activity {
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
         setContentView(R.layout.activity_main);
+
 
         // OSM Map Initialize
         // important! set your user agent to prevent getting banned from the osm servers
@@ -219,68 +234,127 @@ public class MainActivity extends Activity {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         setMarkers();
 
-  
+        if (isRouting)
+        {
+            setNavigation();
+            /*backButton = findViewById(R.id.backButton);
+            backButton.bringToFront();
+            backButton.invalidate();
+            backButton.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    isRouting = false;
+                    Intent leaveRouting = new Intent(MainActivity.this, MainActivity.class);
+                    startActivity(leaveRouting);
+                }
+            });*/
 
-        navigate = findViewById(R.id.navigate);
-        navigate.bringToFront();
-        navigate.invalidate();
-        navigate.setOnClickListener(new View.OnClickListener() {
+        }
+
+        navigateButton = findViewById(R.id.navigate);
+        navigateButton.bringToFront();
+        navigateButton.invalidate();
+        navigateButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 Intent viewNavigation = new Intent(MainActivity.this, Navigation.class);
                 startActivity(viewNavigation);
             }
-
         });
-
-
-
     }
 
-    private void setMarkers() {
-
+    private void setMarkers()
+    {
         createMarkerList();
-
+        //SimplePointTheme pt = new SimplePointTheme(points, true);
         for (Marker m: markers) {
             m.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
             map.getOverlays().add(m);
         }
     }
 
-    private void setNavigation(){
+    private void setNavigation()
+    {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         Bundle points = getIntent().getExtras();
         assert points != null;
         int start = points.getInt("start");
         int dest = points.getInt("dest");
-        if(start != dest)
+
+        ArrayList<GeoPoint> geoList = getGeoPointsList();
+        ArrayList<Marker> mList = getMarkerList();
+
+        int index = 0;
+        for(GeoPoint gp : geoList)
         {
-            int index = 0;
-            for(GeoPoint gp : geopoints)
+            if(index == start)
             {
-                if(index == start)
-                {
-                    GeoPoint startGP = new GeoPoint(gp.getLatitude(), gp.getLongitude());
-                }
-                if(index == dest)
-                {
-                    GeoPoint destGP = new GeoPoint(gp.getLatitude(), gp.getLongitude());
-                }
+                Marker startTemp = mList.get(index);
+                startGP = new GeoPoint(gp.getLatitude(), gp.getLongitude());
+                startM = new Marker(map);
+                startM.setTitle(startTemp.getTitle());
+                startM.setPosition(startGP);
             }
+            if(index == dest)
+            {
+                Marker destTemp = mList.get(index);
+                destGP = new GeoPoint(gp.getLatitude(), gp.getLongitude());
+                destM = new Marker(map);
+                destM.setTitle(destTemp.getTitle());
+                destM.setPosition(destGP);
+            }
+            index++;
+        }
+        startM.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        map.getOverlays().add(startM);
+        destM.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        map.getOverlays().add(destM);
+        removeMarkers();
 
-            /*
-            RoadManager roadManager = new OSMRoadManager(this);
-            ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
-            waypoints.add(startGP);
-            waypoints.add(destGP);
-            Road roadManager.getRoad(waypoints);
-            */
+        RoadManager roadManager = new OSRMRoadManager(this);
+        roadManager.addRequestOption("routeType=pedestrian");
+        ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
+        waypoints.add(startGP);
+        waypoints.add(destGP);
 
+        road = roadManager.getRoad(waypoints);
 
+        mapController.setCenter(startGP);
+        new UpdateRoadTask().execute(waypoints);
+    }
+
+    /*
+     * Private class needed for syncing up the overlays if in
+     * navigation mode.
+     */
+    private static class UpdateRoadTask extends AsyncTask<Object, Void, Road>
+    {
+
+        protected Road doInBackground(Object... params) {
+            @SuppressWarnings("unchecked")
+            ArrayList<GeoPoint> waypoints = (ArrayList<GeoPoint>)params[0];
+            RoadManager roadManager = new OSRMRoadManager(map.getContext());
+
+            return roadManager.getRoad(waypoints);
+        }
+        @Override
+        protected void onPostExecute(Road result) {
+            road = result;
+
+            Polyline roadOverlay = RoadManager.buildRoadOverlay(road);
+
+            map.getOverlays().add(roadOverlay);
+            map.invalidate();
         }
     }
 
-    private void createMarkerList() {
-
+    private void createMarkerList()
+    {
         markers = new ArrayList<Marker>();
         geopoints = new ArrayList<GeoPoint>();
 
@@ -431,107 +505,44 @@ public class MainActivity extends Activity {
                 -81.67723, "Admissions Parking");
         southLotMarker = createMarker(southLotMarker, southLotGeoPoint, 36.21274, -81.69365,
                 "South Parking Lot");
-
-        /*
-        markers.add(srcMarker);
-        markers.add(broyhillMusicMarker);
-        markers.add(broyhillEventMarker);
-        markers.add(schaeferMarker);
-        markers.add(stadiumMarker);
-        markers.add(trivetteMarker);
-        markers.add(athleticsCenterMarker);
-        markers.add(quinnMarker);
-        markers.add(parkingDeckMarker);
-        markers.add(jetMarker);
-        markers.add(convoMarker);
-        markers.add(chancellorsHouseMarker);
-        markers.add(estesHouseMarker);
-        markers.add(turchinMarker);
-        markers.add(valborgTheaterMarker);
-        markers.add(libraryMarker);
-        markers.add(doughertyMarker);
-        markers.add(sanfordMallMarker);
-        markers.add(roessMarker);
-        markers.add(varsityMarker);
-        markers.add(tennisMarker);
-        markers.add(bbDoughertyMarker);
-        markers.add(igGreerMarker);
-        markers.add(mailMarker);
-        markers.add(healthServicesMarker);
-        markers.add(studentUnionMarker);
-        markers.add(bookstoreMarker);
-        markers.add(foundersMarker);
-        markers.add(alumniMarker);
-        markers.add(legendsMarker);
-        markers.add(softballStadiumMarker);
-        markers.add(sofieldIndoorMarker);
-        markers.add(baseballStadiumMarker);
-        markers.add(weyMarker);
-        markers.add(garwoodMarker);
-        markers.add(katharpMarker);
-        markers.add(peacockMarker);
-        markers.add(chapelWilsonMarker);
-        markers.add(edwinDuncanMarker);
-        markers.add(rankinWestMarker);
-        markers.add(rankinNorthMarker);
-        markers.add(smithWrightMarker);
-        markers.add(doughertyHallMarker);
-        markers.add(anneBelkMarker);
-        markers.add(educationMarker);
-        markers.add(sanfordMarker);
-        markers.add(belkMarker);
-        markers.add(frankMarker);
-        markers.add(eggersMarker);
-        markers.add(bowieMarker);
-        markers.add(gardnerMarker);
-        markers.add(coltraneMarker);
-        markers.add(justiceMarker);
-        markers.add(newlandMarker);
-        markers.add(llcMarker);
-        markers.add(appHeightsMarker);
-        markers.add(mountaineerMarker);
-        markers.add(summitMarker);
-        markers.add(coneMarker);
-        markers.add(appalachianMarker);
-        markers.add(lovillMarker);
-        markers.add(whiteMarker);
-        markers.add(eastMarker);
-        markers.add(doughtonMarker);
-        markers.add(hoeyMarker);
-        markers.add(cannonMarker);
-        markers.add(stadiumLotMarker);
-        markers.add(hillStreetLotMarker);
-        markers.add(holmesLotMarker);
-        markers.add(appHeightsLotMarker);
-        markers.add(greenwoodLotMarker);
-        markers.add(peacockLotMarker);
-        markers.add(collegeStreetDeckMarker);
-        markers.add(admissionsLotMarker);
-        markers.add(southLotMarker);
-        */
-
+        walkerMarker = createMarker(walkerMarker, walkerGeoPoint, 36.21682, -81.68495, "Walker Hall");
     }
 
-    private Marker createMarker(Marker m, GeoPoint p, double lat, double lon, String title) {
+    private Marker createMarker(Marker m, GeoPoint p, double lat, double lon, String title)
+    {
         m = new Marker(map);
         p = new GeoPoint(lat, lon);
         markers.add(m);
         geopoints.add(p);
         m.setTitle(title);
         m.setPosition(p);
-        //m.setIcon(new ColorDrawable(Color.BLUE));
-        //m.setIcon(ContextCompat.getDrawable(mContext,R.drawable.order_pin));
         return m;
     }
 
-    public static ArrayList<Marker> getMarkerList() {
+    /*
+     *   Remove all the markers from the map (not including start and dest)
+     */
+    private void removeMarkers()
+    {
+        ArrayList<Marker> mList = getMarkerList();
+        for (Marker m : mList)
+        {
+            map.getOverlays().remove(m);
+        }
+    }
+
+    public static ArrayList<Marker> getMarkerList()
+    {
         return markers;
     }
 
-    public static ArrayList<GeoPoint> getGeoPointsList() {
+    public static ArrayList<GeoPoint> getGeoPointsList()
+    {
         return geopoints;
     }
 
-
-
+    public static void turnDirectionsOn()
+    {
+        isRouting = true;
+    }
 }

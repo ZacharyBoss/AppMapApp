@@ -92,6 +92,7 @@ public class Navigation extends Activity { //implements OnItemSelectedListener {
                 Intent viewMapwD = new Intent(Navigation.this, MainActivity.class);
                 viewMapwD.putExtra("start", startPosition);
                 viewMapwD.putExtra("dest", destPosition);
+                MainActivity.turnDirectionsOn();
                 startActivity(viewMapwD);
             }
         });
