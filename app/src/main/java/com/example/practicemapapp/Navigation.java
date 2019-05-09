@@ -115,7 +115,7 @@ public class Navigation extends Activity { //implements OnItemSelectedListener {
     public String[] markerArraylistToArray(ArrayList<Marker> arr) {
         String[] mArr = new String[arr.size()];
         for (int i = 0; i < arr.size(); i++) {
-            mArr[i] = arr.get(i).getTitle();
+            mArr[i] = arr.get(i).getTitle().split(":")[0];
         }
         return mArr;
     }

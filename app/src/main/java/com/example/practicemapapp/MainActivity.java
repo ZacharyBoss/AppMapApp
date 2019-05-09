@@ -382,7 +382,7 @@ public class MainActivity extends Activity {
                         "The Broyhill Music Center includes two performance halls, a state of the art recording studio, an opera studio, a computer lab, a piano lab, a 5,000 square foot music library, an instrumental rehearsal hall, a choral rehearsal hall, small ensemble rehearsal rooms, more than 30 offices and over 50 practice rooms with pianos.");
         broyhillEventMarker = createMarker(broyhillEventMarker, broyhillEventGeoPoint, 36.21443,
                 -81.69318,
-                "Broyhill Event Center");
+                "Broyhill Event Center:");
         schaeferMarker = createMarker(schaeferMarker, schaeferGeoPoint, 36.215308, -81.683975,
                 "Schaefer Center: The Schaefer Center for the Performing Arts is a 1,673-seat multi-use auditorium. The Center features orchestra and balcony level seating and a proscenium stage. The Schaefer Center is also home to the Smith Gallery." +
                         "The Schaefer Center for the Performing Arts is dedicated to enhancing the artistic and cultural landscape of Appalachian State University and the surrounding region by providing a venue devoted to the year-round presentation of campus and community events that enrich, educate, inspire, and promote quality of life.");
